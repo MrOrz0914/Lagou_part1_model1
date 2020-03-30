@@ -10,6 +10,16 @@ public class MappedStatement {
     private String paramterType;
     //sql语句
     private String sql;
+    // 操作SQL类型
+    private String sqlCommandType;
+
+    public String getSqlCommandType() {
+        return sqlCommandType;
+    }
+
+    public void setSqlCommandType(String sqlCommandType) {
+        this.sqlCommandType = sqlCommandType;
+    }
 
     public String getId() {
         return id;

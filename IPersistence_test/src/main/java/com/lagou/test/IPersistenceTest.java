@@ -6,42 +6,67 @@ import com.lagou.pojo.User;
 import com.lagou.sqlSession.SqlSession;
 import com.lagou.sqlSession.SqlSessionFactory;
 import com.lagou.sqlSession.SqlSessionFactoryBuilder;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.List;
 
 public class IPersistenceTest {
 
-    @Test
-    public void test() throws Exception {
+    private IUserDao userDao;
+
+    @Before
+    public void before() throws Exception {
         InputStream resourceAsSteam = Resources.getResourceAsSteam("sqlMapConfig.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsSteam);
         SqlSession sqlSession = sqlSessionFactory.openSession();
-
-        //调用
-        User user = new User();
-        user.setId(1);
-        user.setUsername("张三");
-      /*  User user2 = sqlSession.selectOne("user.selectOne", user);
-
-        System.out.println(user2);*/
-
-       /* List<User> users = sqlSession.selectList("user.selectList");
-        for (User user1 : users) {
-            System.out.println(user1);
-        }*/
-
-        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-
-        List<User> all = userDao.findAll();
-        for (User user1 : all) {
-            System.out.println(user1);
-        }
-
+        userDao = sqlSession.getMapper(IUserDao.class);
 
     }
 
 
+    /**
+     * 新增用户
+     */
+    @Test
+    public void insertUser() {
+        User user = new User();
+        user.setId(3);
+        user.setUsername("lisi");
+        userDao.insertUser(user);
+    }
 
+    /**
+     * 修改用户
+     */
+    @Test
+    public void updateUser() {
+        User user = new User();
+        user.setId(3);
+        user.setUsername("666");
+        userDao.updateUser(user);
+    }
+
+
+
+    /**
+     * 删除用户
+     */
+    @Test
+    public void deleteUser() {
+
+        userDao.deleteUser(3);
+    }
+
+    /**
+     * 查询用户
+     */
+    @Test
+    public void selectUser() throws Exception {
+        User user = new User();
+        user.setId(2);
+        user.setUsername("tom");
+        User ret = userDao.findByCondition(user);
+        System.out.println(ret);
+    }
 }

@@ -15,17 +15,30 @@ public class XMLMapperBuilder {
     private Configuration configuration;
 
     public XMLMapperBuilder(Configuration configuration) {
-        this.configuration =configuration;
+        this.configuration = configuration;
     }
 
     public void parse(InputStream inputStream) throws DocumentException {
-
         Document document = new SAXReader().read(inputStream);
+
         Element rootElement = document.getRootElement();
 
-        String namespace = rootElement.attributeValue("namespace");
+        List<Element> selectList = rootElement.selectNodes("//select");
+        setConfiguration(rootElement, "SELECT", selectList);
 
-        List<Element> list = rootElement.selectNodes("//select");
+        List<Element> insertList = rootElement.selectNodes("//insert");
+        setConfiguration(rootElement, "INSERT", insertList);
+
+        List<Element> updateList = rootElement.selectNodes("//update");
+        setConfiguration(rootElement, "UPDATE", updateList);
+
+        List<Element> deleteList = rootElement.selectNodes("//delete");
+        setConfiguration(rootElement, "DELETE", deleteList);
+
+    }
+
+    private void setConfiguration(Element rootElement, String sqlCommandType, List<Element> list) throws DocumentException {
+        String namespace = rootElement.attributeValue("namespace");
         for (Element element : list) {
             String id = element.attributeValue("id");
             String resultType = element.attributeValue("resultType");
@@ -36,12 +49,9 @@ public class XMLMapperBuilder {
             mappedStatement.setResultType(resultType);
             mappedStatement.setParamterType(paramterType);
             mappedStatement.setSql(sqlText);
-            String key = namespace+"."+id;
-            configuration.getMappedStatementMap().put(key,mappedStatement);
-
+            mappedStatement.setSqlCommandType(sqlCommandType);
+            String key = namespace + "." + id;
+            configuration.getMappedStatementMap().put(key, mappedStatement);
         }
-
     }
-
-
 }
